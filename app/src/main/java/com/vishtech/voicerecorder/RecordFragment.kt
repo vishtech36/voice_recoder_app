@@ -35,15 +35,15 @@ class RecordFragment : Fragment(R.layout.fragment_record){
 
         binding.recordBtn.setOnClickListener {
             if(isRecording) {
-                stopRecording()
                 isRecording = false
-                binding.recordBtn.setImageResource(R.drawable.ic_stop_music_48)
+                binding.recordBtn.setImageResource(R.drawable.ic_mic_48)
+                stopRecording()
             }else{
                 // start recording
                 if(checkPermissions()) {
-                    startRecording()
                     isRecording = true
-                    binding.recordBtn.setImageResource(R.drawable.ic_mic_48)
+                    binding.recordBtn.setImageResource(R.drawable.ic_stop_music_48)
+                    startRecording()
                 }
             }
         }
