@@ -6,15 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".RecordFragment">
 
-    <ImageView
+    <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/record_header_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        app:lottie_rawRes="@raw/baner_anim"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/ic_launcher_background"
-        android:layout_marginTop="64dp"/>
+        android:layout_marginTop="64dp"
+        />
+
 
     <TextView
         android:id="@+id/record_filename"
@@ -47,7 +51,7 @@
         android:id="@+id/record_btn"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:src="@drawable/ic_mic_24"
+        android:src="@drawable/ic_mic_48"
         app:layout_constraintBottom_toBottomOf="parent"
         android:background="#fff"
         app:layout_constraintEnd_toEndOf="parent"
