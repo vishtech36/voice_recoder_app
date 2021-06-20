@@ -14,5 +14,5 @@
         app:navGraph = "@navigation/nav_graph"
         app:defaultNavHost = "true"
         />
-    <include layout="@layout/player_sheet"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

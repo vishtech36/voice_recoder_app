@@ -64,33 +64,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/play_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:src="@drawable/ic_baseline_play_arrow_24"
         android:padding="16dp"
+        android:background="@drawable/player_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:background="@drawable/player_bg"
         android:src="@drawable/ic_baseline_skip_next_24"
         app:layout_constraintBottom_toBottomOf="@+id/play_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/play_btn"
         app:layout_constraintTop_toTopOf="@+id/play_btn" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/prev_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:background="@drawable/player_bg"
         android:src="@drawable/ic_previous_24"
         app:layout_constraintBottom_toBottomOf="@+id/play_btn"
         app:layout_constraintEnd_toStartOf="@+id/play_btn"
