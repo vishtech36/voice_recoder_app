@@ -35,6 +35,7 @@ class AudioListAdapter(val allFiles: Array<File>, private val onItemListClick: o
     }
 }
 
+
 interface onItemListClick {
     fun onClickListener(file: File, position: Int);
 }
