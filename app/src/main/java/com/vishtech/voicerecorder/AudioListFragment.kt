@@ -24,6 +24,8 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
     private var isPlaying = false
     private lateinit var playerSheetLayout: ConstraintLayout
     private lateinit var playBtn: ImageButton
+    private lateinit var playNextBtn: ImageButton
+    private lateinit var playPrevBtn: ImageButton
     private lateinit var playerHeaderTitle: TextView
     private lateinit var playerFilename: TextView
     private lateinit var seekBar: SeekBar
@@ -37,6 +39,8 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
         binding = FragmentAudioListBinding.bind(view)
         playerSheetLayout = view.findViewById(R.id.player_sheet)
         playBtn = view.findViewById(R.id.play_btn)
+        playNextBtn = view.findViewById(R.id.play_next_btn)
+        playPrevBtn = view.findViewById(R.id.play_prev_btn)
         playerHeaderTitle = view.findViewById(R.id.player_header_title)
         playerFilename = view.findViewById(R.id.player_filename)
         seekBar = view.findViewById(R.id.player_seek_bar)
@@ -74,6 +78,26 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
                 resumeAudio()
             }
         }
+
+        playNextBtn.setOnClickListener {
+            if (isPlaying) {
+                stopAudio()
+                playNextAudio()
+            } else {
+                playNextAudio()
+            }
+        }
+
+        playPrevBtn.setOnClickListener {
+            if (isPlaying) {
+                stopAudio()
+                playPrevAudio()
+            } else {
+                playPrevAudio()
+            }
+        }
+
+
 
     seekBar.setOnSeekBarChangeListener(
     object : SeekBar.OnSeekBarChangeListener {
@@ -177,7 +201,12 @@ private fun playNextAudio() {
 }
 
 private fun playPrevAudio() {
-    currentAudioIndex = (--currentAudioIndex) % allFiles.size
+    if(currentAudioIndex == 0) {
+        currentAudioIndex = allFiles.size
+    }
+    currentAudioIndex--
+    playAudio()
+
 }
 
 override fun onStop() {

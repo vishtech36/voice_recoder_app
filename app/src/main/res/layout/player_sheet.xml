@@ -59,7 +59,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="File Name"
+        android:text=""
         android:textColor="#fff"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
         app:layout_constraintTop_toBottomOf="@+id/player_filename" />
 
     <ImageButton
-        android:id="@+id/next_btn"
+        android:id="@+id/play_next_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
@@ -90,7 +90,7 @@
         app:layout_constraintTop_toTopOf="@+id/play_btn" />
 
     <ImageButton
-        android:id="@+id/prev_btn"
+        android:id="@+id/play_prev_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="16dp"
