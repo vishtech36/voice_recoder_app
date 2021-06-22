@@ -22,7 +22,6 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
     private lateinit var binding: FragmentAudioListBinding
     private lateinit var mediaPlayer: MediaPlayer
     private var isPlaying = false
-    private var fileToPlay: File? = null
     private lateinit var playerSheetLayout: ConstraintLayout
     private lateinit var playBtn: ImageButton
     private lateinit var playerHeaderTitle: TextView
@@ -30,7 +29,8 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
     private lateinit var seekBar: SeekBar
     private lateinit var updateSeekbar: Runnable
     private lateinit var seekBarHandler: Handler
-
+    private lateinit var allFiles: Array<File>
+    private var currentAudioIndex = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -46,7 +46,7 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
         // fetching all files
         val path = requireActivity().getExternalFilesDir("/")?.absolutePath
         val directory = File(path)
-        val allFiles = directory.listFiles()
+        allFiles = directory.listFiles()
 
         val adapter = AudioListAdapter(allFiles, this)
         binding.audioListView.apply {
@@ -71,111 +71,118 @@ class AudioListFragment : Fragment(R.layout.fragment_audio_list), onItemListClic
             if (isPlaying) {
                 pauseAudio()
             } else {
-                if (fileToPlay == null) {
-                    resumeAudio()
-                } else {
-                    resumeAudio()
-                }
-            }
-        }
-
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                pauseAudio()
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                val progress: Int = seekBar!!.progress
-                mediaPlayer.seekTo(progress)
                 resumeAudio()
             }
-        })
-
-    }
-
-    override fun onClickListener(file: File, position: Int) {
-
-        fileToPlay = file
-
-        if (isPlaying) {
-            stopAudio()
-            playAudio(fileToPlay!!)
-        } else {
-            playAudio(fileToPlay!!)
         }
-    }
 
-    private fun pauseAudio() {
-        playBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-        mediaPlayer.pause()
-        isPlaying = false
-        seekBarHandler.removeCallbacks(updateSeekbar)
-    }
+    seekBar.setOnSeekBarChangeListener(
+    object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
 
-    private fun resumeAudio() {
-        playBtn.setImageResource(R.drawable.ic_pause_24)
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            pauseAudio()
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            val progress: Int = seekBar!!.progress
+            mediaPlayer.seekTo(progress)
+            resumeAudio()
+        }
+    })
+
+}
+
+override fun onClickListener(file: File, position: Int) {
+
+    currentAudioIndex = position
+
+    if (isPlaying) {
+        stopAudio()
+        playAudio()
+    } else {
+        playAudio()
+    }
+}
+
+private fun pauseAudio() {
+    playBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+    mediaPlayer.pause()
+    isPlaying = false
+    seekBarHandler.removeCallbacks(updateSeekbar)
+}
+
+private fun resumeAudio() {
+    playBtn.setImageResource(R.drawable.ic_pause_24)
+    mediaPlayer.start()
+    isPlaying = true
+
+    updateRunnable()
+    seekBarHandler.postDelayed(updateSeekbar, 0)
+}
+
+private fun stopAudio() {
+    playBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+    playerHeaderTitle.text = "Stopped"
+    isPlaying = false
+    mediaPlayer.stop()
+    seekBarHandler.removeCallbacks(updateSeekbar)
+}
+
+private fun playAudio() {
+    mediaPlayer = MediaPlayer()
+    playerHeaderTitle.text = "Playing"
+    val bottomSheetBehavior = BottomSheetBehavior.from(playerSheetLayout)
+    bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    try {
+        mediaPlayer.setDataSource(allFiles[currentAudioIndex].absolutePath)
+        mediaPlayer.prepare()
         mediaPlayer.start()
-        isPlaying = true
 
-        updateRunnable()
-        seekBarHandler.postDelayed(updateSeekbar, 0)
+    } catch (e: Exception) {
+
     }
 
-    private fun stopAudio() {
-        playBtn.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+    playBtn.setImageResource(R.drawable.ic_pause_24)
+    playerFilename.text = allFiles[currentAudioIndex].name
+
+    isPlaying = true
+
+    mediaPlayer.setOnCompletionListener {
+        stopAudio()
         playerHeaderTitle.text = "Stopped"
-        isPlaying = false
-        mediaPlayer.stop()
-        seekBarHandler.removeCallbacks(updateSeekbar)
+        playNextAudio()
     }
 
-    private fun playAudio(file: File) {
-        mediaPlayer = MediaPlayer()
-        playerHeaderTitle.text = "Playing"
-        val bottomSheetBehavior = BottomSheetBehavior.from(playerSheetLayout)
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-        try {
-            mediaPlayer.setDataSource(fileToPlay?.absolutePath)
-            mediaPlayer.prepare()
-            mediaPlayer.start()
+    seekBar.max = mediaPlayer.duration
+    seekBarHandler = Handler()
 
-        } catch (e: Exception) {
+    updateRunnable()
+    seekBarHandler.postDelayed(updateSeekbar, 0)
+}
 
-        }
-
-        playBtn.setImageResource(R.drawable.ic_pause_24)
-        playerFilename.text = fileToPlay?.name
-
-        isPlaying = true
-
-        mediaPlayer.setOnCompletionListener {
-            stopAudio()
-            playerHeaderTitle.text = "Stopped"
-        }
-
-        seekBar.max = mediaPlayer.duration
-        seekBarHandler = Handler()
-
-        updateRunnable()
-        seekBarHandler.postDelayed(updateSeekbar, 0)
-    }
-
-    private fun updateRunnable() {
-        updateSeekbar = object : Runnable {
-            override fun run() {
-                seekBar.progress = mediaPlayer.currentPosition
-                seekBarHandler.postDelayed(this, 100)
-            }
+private fun updateRunnable() {
+    updateSeekbar = object : Runnable {
+        override fun run() {
+            seekBar.progress = mediaPlayer.currentPosition
+            seekBarHandler.postDelayed(this, 100)
         }
     }
+}
 
-    override fun onStop() {
-        super.onStop()
-        if(isPlaying)
-            stopAudio()
-    }
+private fun playNextAudio() {
+    currentAudioIndex = (++currentAudioIndex) % allFiles.size
+    playAudio()
+}
+
+private fun playPrevAudio() {
+    currentAudioIndex = (--currentAudioIndex) % allFiles.size
+}
+
+override fun onStop() {
+    super.onStop()
+    if (isPlaying)
+        stopAudio()
+}
 }
